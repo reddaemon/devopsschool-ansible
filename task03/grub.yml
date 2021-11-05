@@ -1,0 +1,19 @@
+---
+- name: grub modification
+  hosts: nodes
+  user: ansible
+  become: true
+  become_method: sudo
+  become_user: root
+  tasks:
+  - name: Add params
+    lineinfile:
+      path: /etc/default/grub
+      state: present
+      backrefs: yes
+      regexp: '^GRUB_CMDLINE_LINUX=\"(.*(?<!biosdevname))\"'
+      line: 'GRUB_CMDLINE_LINUX="\1 net.ifnames=0 biosdevname=0"'
+
+  - name: apply grub2 config
+    command:
+      cmd: grub2-mkconfig

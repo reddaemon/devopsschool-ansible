@@ -1,0 +1,32 @@
+---
+- name: httpd installation
+  hosts: nodes
+  user: ansible
+  become: true
+  become_method: sudo
+  become_user: root
+  
+  tasks:
+  - name: Install httpd
+    package:
+      name: httpd
+      state: present
+  - name: Start service httpd
+    service:
+      name: httpd
+      state: started
+  - name: Create file with content
+    lineinfile:
+      path: /var/www/html/index.html
+      line: Welcome to my web server
+      create: yes
+  - name: Open 80 port
+    firewalld:
+      port: 80/tcp
+      permanent: yes
+      state: enabled
+  - name: Open 443 port
+    firewalld:
+      port: 443/tcp
+      permanent: yes
+      state: enabled

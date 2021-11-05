@@ -1,0 +1,26 @@
+---
+- name: httpd uninstall
+  hosts: nodes
+  user: ansible
+  become: true
+  become_method: sudo
+  become_user: root
+  tasks:
+  - name: Uninstall httpd
+    package:
+      name: httpd
+      state: absent
+  - name: remove index.html file
+    file:
+      path: /var/www/html/index.html
+      state: absent
+  - name: Close 80 port
+    firewalld:
+      port: 80/tcp
+      permanent: yes
+      state: disabled
+  - name: Close 443 port
+    firewalld:
+      port: 443/tcp
+      permanent: yes
+      state: disabled
