@@ -30,3 +30,7 @@
       port: 443/tcp
       permanent: yes
       state: enabled
+  - name: Reload service firewalld
+    service:
+      name: firewalld
+      state: reloaded
