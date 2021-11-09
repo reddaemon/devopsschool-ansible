@@ -1,0 +1,17 @@
+- name: create users
+  hosts: nodes
+  user: ansible
+  become: true
+  become_method: sudo
+  become_user: root
+  vars_files:
+  - vars/users.yml
+
+  tasks:
+  - name: create users
+    user:
+      name: "{{ item.key }}"
+      comment: "{{ item.value.comment }}"
+      home: "{{ item.value.homedir }}"
+      password: "{{ item.value.password | password_hash('sha512') }}"
+    with_dict: "{{ users }}"
