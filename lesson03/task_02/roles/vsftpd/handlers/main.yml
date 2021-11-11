@@ -1,0 +1,9 @@
+---
+- name: Reload service firewalld
+  service:
+    name: firewalld
+    state: reloaded
+- name: Restart vsftpd
+  service:
+    name: vsftpd
+    state: restarted

@@ -1,0 +1,41 @@
+---
+- name: Install vsftpd
+  package:
+    name: vsftpd
+    state: present
+- name: Start service vsftpd
+  service:
+    name: vsftpd
+    state: started
+- name: Create file from template
+  template:
+    src: vsftpd.conf.j2
+    dest: /etc/vsftpd/vsftpd.conf
+  notify:
+  - Restart vsftpd
+
+- name: install dependencies and security tasks
+  include_tasks: security.yml
+
+- name: Create directory upload
+  file:
+    path: /var/ftp/pub/upload
+    owner: ftp
+    group: ftp
+    state: directory
+
+- name: Gather facts on listening ports
+  listen_ports_facts:
+
+- name: debug
+  debug:
+    msg: "{{ ansible_facts }}"
+- name: check service
+  debug:
+    msg: service is listening on port {{ item.port }}  by pid {{ item.pid }}
+  vars:
+    service_listen_check: "{{ ansible_facts.tcp_listen | selectattr('port', 'in', service_ports) | list }}"
+    service_ports:
+    - 20
+    - 21
+  loop: "{{ service_listen_check }}"

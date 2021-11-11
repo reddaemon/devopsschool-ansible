@@ -1,0 +1,5 @@
+---
+- name: install dependencies
+  yum:
+    name: [net-tools,policycoreutils-python-utils]
+    state: present

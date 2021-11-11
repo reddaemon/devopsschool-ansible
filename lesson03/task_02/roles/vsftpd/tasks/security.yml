@@ -1,0 +1,50 @@
+---
+- name: Open 20 port
+  firewalld:
+    port: "{{ vsftpd_port1 }}/tcp"
+    permanent: yes
+    state: enabled
+  notify:
+  - Reload service firewalld
+  - Restart vsftpd
+- name: Open 21 port
+  firewalld:
+    port: "{{ vsftpd_port2 }}/tcp"
+    permanent: yes
+    state: enabled
+  notify:
+  - Reload service firewalld
+  - Restart vsftpd
+- name: enable ftp service rule
+  firewalld:
+    service: ftp
+    permanent: yes
+    state: enabled
+  notify:
+  - Reload service firewalld
+  - Restart vsftpd
+- name: Open passive mode ports
+  firewalld:
+    port: "{{ pasv_min_port }}-{{ pasv_max_port }}/tcp"
+    permanent: yes
+    state: enabled
+  notify:
+  - Reload service firewalld
+  - Restart vsftpd
+- name: install dependencies
+  include_tasks: dependencies.yml
+- name: Allow vsftp anonymous access
+  seboolean:
+    name: ftpd_anon_write
+    state: yes
+    persistent: yes
+- name: Allow vsftp passive mode
+  seboolean:
+    name: ftpd_use_passive_mode
+    state: yes
+    persistent: yes
+- name: Allow vsftp modify file in /var/ftp/pub
+  sefcontext:
+    target: '/var/ftp/pub(/.*)?'
+    setype: public_content_rw_t
+    state: present
