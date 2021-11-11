@@ -1,0 +1,48 @@
+---
+- name: Install httpd
+  package:
+    name: httpd
+    state: present
+- name: Start service httpd
+  service:
+    name: httpd
+    state: started
+- name: Create file from template
+  template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+- name: Open 80 port
+  firewalld:
+    port: "{{ http_port }}/tcp"
+    permanent: yes
+    state: enabled
+  notify:
+  - Reload service firewalld
+- name: Open 443 port
+  firewalld:
+    port: "{{ https_port }}/tcp"
+    permanent: yes
+    state: enabled
+  notify:
+  - Reload service firewalld
+
+- name: install net-tools
+  package:
+    name: net-tools
+    state: present
+
+- name: Gather facts on listening ports
+  listen_ports_facts:
+
+- name: debug
+  debug:
+    msg: "{{ ansible_facts }}"
+- name: check service
+  debug:
+    msg: service is listening on port {{ item.port }}  by pid {{ item.pid }}
+  vars:
+    service_listen_check: "{{ ansible_facts.tcp_listen | selectattr('port', 'in', service_ports) | list }}"
+    service_ports:
+    - 80
+    - 443
+  loop: "{{ service_listen_check }}"
