@@ -15,11 +15,16 @@
     service:
       name: httpd
       state: started
+  - name: Enable service httpd
+    service:
+      name: httpd
+      enabled: yes
   - name: Create file with content
     lineinfile:
       path: /var/www/html/index.html
       line: Welcome to my web server
       create: yes
+      mode: '0744'
   - name: Open 80 port
     firewalld:
       port: 80/tcp
