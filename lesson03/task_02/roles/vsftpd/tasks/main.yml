@@ -11,6 +11,7 @@
   template:
     src: vsftpd.conf.j2
     dest: /etc/vsftpd/vsftpd.conf
+    mode: '0644'
   notify:
   - Restart vsftpd
 
@@ -23,6 +24,7 @@
     owner: ftp
     group: ftp
     state: directory
+    mode: '0744'
 
 - name: Gather facts on listening ports
   listen_ports_facts:
