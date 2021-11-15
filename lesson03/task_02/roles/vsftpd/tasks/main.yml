@@ -31,7 +31,7 @@
     mode: '0744'
 
 - name: Gather facts on listening ports
-  community.general.listen_ports_facts:
+  listen_ports_facts:
 
 - name: debug
   debug:
