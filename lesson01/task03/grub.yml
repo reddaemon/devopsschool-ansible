@@ -5,14 +5,16 @@
   become: true
   become_method: sudo
   become_user: root
+  vars:
+    value: "0"
   tasks:
   - name: Add params
     lineinfile:
       path: /etc/default/grub
       state: present
       backrefs: yes
-      regexp: '^GRUB_CMDLINE_LINUX=\"(.*(?<!biosdevname))\"'
-      line: 'GRUB_CMDLINE_LINUX="\1 net.ifnames=0 biosdevname=0"'
+      regexp: '(^GRUB_CMDLINE_LINUX=.*?)(\bnet\.ifnames=)(\d)(.*)(\bbiosdevname=)(\d)(.*)(\")'
+      line: '\1\g<2>{{ value }}\4\g<5>{{ value }}\7\8'
 
   - name: apply grub2 config
     command:
